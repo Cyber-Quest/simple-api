@@ -27,6 +27,14 @@ let products = [
   },
 ];
 
+let category = [
+  {
+    id: "1",
+    name: "carro",
+    description: "fusion 2011", 
+  },
+];
+
 app.get("/", function (req, res) {
   res.send("Bem vindo!");
 });
@@ -109,6 +117,49 @@ app.delete("/products/:id", function (req, res) {
   products = new_products;
   res.send({});
 });
+
+
+//----------------- category -----------------//
+app.get("/category", function (req, res) {
+  res.send({ list: category });
+});
+
+app.post("/category", function (req, res) {
+  const { name, description } = req.body;
+  category = [
+    ...category,
+    {
+      id: uuidv4(),
+      name: name,
+      description: description,
+    },
+  ];
+  res.send({});
+});
+
+app.put("/category/:id", function (req, res) {
+  const { id } = req.params;
+  const { name, description, value, quantity } = req.body;
+  const index = category.findIndex((item) => {
+    return id === item.id;
+  });
+  category[index].name = name;
+  category[index].description = description;
+  category[index].value = value;
+  category[index].quantity = quantity;
+
+  res.send({});
+});
+
+app.delete("/category/:id", function (req, res) {
+  const { id } = req.params;
+  const new_category = category.filter((item) => {
+    return id !== item.id;
+  });
+  category = new_category;
+  res.send({});
+});
+
 
 //----------------- server -----------------//
 app.listen(8000, function () {
