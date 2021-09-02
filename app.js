@@ -1,7 +1,9 @@
 var express = require("express");
 var app = express();
 const { v4: uuidv4 } = require("uuid");
+var cors = require('cors')
 
+app.use(cors())
 app.use(express.json());
 
 const server_config = {
@@ -27,11 +29,26 @@ let products = [
   },
 ];
 
-let category = [
+let categories = [
   {
     id: "1",
     name: "carro",
     description: "fusion 2011", 
+  },
+];
+
+let carousel = [
+  {
+    id: "1",
+    link: "https://ppsspp.org/img/screens/small/Final_Fantasy_Type-0_-_Drayano.jpg", 
+  },
+  {
+    id: "2",
+    link: "https://ppsspp.org/img/screens/small/daxter.jpg", 
+  },
+  {
+    id: "3",
+    link: "https://ppsspp.org/img/screens/small/gtavcs.jpg", 
   },
 ];
 
@@ -119,15 +136,15 @@ app.delete("/products/:id", function (req, res) {
 });
 
 
-//----------------- category -----------------//
-app.get("/category", function (req, res) {
-  res.send({ list: category });
+//----------------- categories -----------------//
+app.get("/categories", function (req, res) {
+  res.send({ list: categories });
 });
 
-app.post("/category", function (req, res) {
+app.post("/categories", function (req, res) {
   const { name, description } = req.body;
-  category = [
-    ...category,
+  categories = [
+    ...categories,
     {
       id: uuidv4(),
       name: name,
@@ -137,26 +154,51 @@ app.post("/category", function (req, res) {
   res.send({});
 });
 
-app.put("/category/:id", function (req, res) {
+app.put("/categories/:id", function (req, res) {
   const { id } = req.params;
   const { name, description, value, quantity } = req.body;
-  const index = category.findIndex((item) => {
+  const index = categories.findIndex((item) => {
     return id === item.id;
   });
-  category[index].name = name;
-  category[index].description = description;
-  category[index].value = value;
-  category[index].quantity = quantity;
+  categories[index].name = name;
+  categories[index].description = description;
 
   res.send({});
 });
 
-app.delete("/category/:id", function (req, res) {
+app.delete("/categories/:id", function (req, res) {
   const { id } = req.params;
-  const new_category = category.filter((item) => {
+  const new_categories = categories.filter((item) => {
     return id !== item.id;
   });
-  category = new_category;
+  categories = new_categories;
+  res.send({});
+});
+
+
+//----------------- carousel -----------------//
+app.get("/carousel", function (req, res) {
+  res.send({ list: carousel });
+});
+
+app.post("/carousel", function (req, res) {
+  const { link } = req.body;
+  carousel = [
+    ...carousel,
+    {
+      id: uuidv4(),
+      link: link, 
+    },
+  ];
+  res.send({});
+});
+
+app.delete("/carousel/:id", function (req, res) {
+  const { id } = req.params;
+  const new_carousel = carousel.filter((item) => {
+    return id !== item.id;
+  });
+  carousel = new_carousel;
   res.send({});
 });
 
