@@ -40,7 +40,8 @@ let categories = [
 let carousel = [
   {
     id: "1",
-    link: "https://ppsspp.org/img/screens/small/Final_Fantasy_Type-0_-_Drayano.jpg",
+    link:
+      "https://ppsspp.org/img/screens/small/Final_Fantasy_Type-0_-_Drayano.jpg",
   },
   {
     id: "2",
@@ -236,17 +237,13 @@ app.get("/comment", function (req, res) {
 });
 
 app.post("/comment", function (req, res) {
-  const { message, id_user } = req.body;
+  const { message } = req.body;
   comments = [
     ...comments,
     {
       id: uuidv4(),
       message: message,
-      likes: [
-        {
-          id_user: id_user,
-        },
-      ],
+      likes: [],
     },
   ];
   res.send({});
@@ -265,18 +262,18 @@ app.delete("/comment/:id", function (req, res) {
 app.put("/like", function (req, res) {
   const { id_comment, id_user } = req.body;
   const index = comments.findIndex((item) => item.id === id_comment);
-  const is_commented = comments[index].likes.findIndex((item) => item.id_user === id_user); 
-  if(is_commented === -1){
+  const is_commented = comments[index].likes.findIndex(
+    (item) => item.id_user === id_user
+  );
+  if (is_commented === -1) {
     comments[index].likes = [
       ...comments[index].likes,
       {
         id_user: id_user,
       },
-    ]; 
+    ];
     res.send({});
-  }
-  else
-    res.send({error: "usuário já curtiu esse comentário"})
+  } else res.send({ error: "usuário já curtiu esse comentário" });
 });
 
 //----------------- server -----------------//
