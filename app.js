@@ -1,9 +1,9 @@
 var express = require("express");
 var app = express();
 const { v4: uuidv4 } = require("uuid");
-var cors = require('cors')
+var cors = require("cors");
 
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 
 const server_config = {
@@ -33,22 +33,52 @@ let categories = [
   {
     id: "1",
     name: "carro",
-    description: "fusion 2011", 
+    description: "fusion 2011",
   },
 ];
 
 let carousel = [
   {
     id: "1",
-    link: "https://ppsspp.org/img/screens/small/Final_Fantasy_Type-0_-_Drayano.jpg", 
+    link: "https://ppsspp.org/img/screens/small/Final_Fantasy_Type-0_-_Drayano.jpg",
   },
   {
     id: "2",
-    link: "https://ppsspp.org/img/screens/small/daxter.jpg", 
+    link: "https://ppsspp.org/img/screens/small/daxter.jpg",
   },
   {
     id: "3",
-    link: "https://ppsspp.org/img/screens/small/gtavcs.jpg", 
+    link: "https://ppsspp.org/img/screens/small/gtavcs.jpg",
+  },
+];
+
+let comments = [
+  {
+    id: "1",
+    message: "Ajuda aqui pf",
+    likes: [
+      {
+        id_user: "1",
+      },
+    ],
+  },
+  {
+    id: "2",
+    message: "Ajuda aqui pf 2",
+    likes: [
+      {
+        id_user: "2",
+      },
+    ],
+  },
+  {
+    id: "3",
+    message: "Ajuda aqui pf 3",
+    likes: [
+      {
+        id_user: "3",
+      },
+    ],
   },
 ];
 
@@ -135,7 +165,6 @@ app.delete("/products/:id", function (req, res) {
   res.send({});
 });
 
-
 //----------------- categories -----------------//
 app.get("/categories", function (req, res) {
   res.send({ list: categories });
@@ -175,7 +204,6 @@ app.delete("/categories/:id", function (req, res) {
   res.send({});
 });
 
-
 //----------------- carousel -----------------//
 app.get("/carousel", function (req, res) {
   res.send({ list: carousel });
@@ -187,7 +215,7 @@ app.post("/carousel", function (req, res) {
     ...carousel,
     {
       id: uuidv4(),
-      link: link, 
+      link: link,
     },
   ];
   res.send({});
@@ -202,8 +230,56 @@ app.delete("/carousel/:id", function (req, res) {
   res.send({});
 });
 
+//----------------- comment -----------------//
+app.get("/comment", function (req, res) {
+  res.send({ list: comments });
+});
+
+app.post("/comment", function (req, res) {
+  const { message, id_user } = req.body;
+  comments = [
+    ...comments,
+    {
+      id: uuidv4(),
+      message: message,
+      likes: [
+        {
+          id_user: id_user,
+        },
+      ],
+    },
+  ];
+  res.send({});
+});
+
+app.delete("/comment/:id", function (req, res) {
+  const { id } = req.params;
+  const new_comment = comments.filter((item) => {
+    return id !== item.id;
+  });
+  comments = new_comment;
+  res.send({});
+});
+
+//----------------- likes -----------------//
+app.put("/like", function (req, res) {
+  const { id_comment, id_user } = req.body;
+  const index = comments.findIndex((item) => item.id === id_comment);
+  const is_commented = comments[index].likes.findIndex((item) => item.id_user === id_user); 
+  if(is_commented === -1){
+    comments[index].likes = [
+      ...comments[index].likes,
+      {
+        id_user: id_user,
+      },
+    ]; 
+    res.send({});
+  }
+  else
+    res.send({error: "usuário já curtiu esse comentário"})
+});
 
 //----------------- server -----------------//
-app.listen(8000, function () {
+app.listen(server_config.port, function () {
   console.log(`${server_config.messageInitialize} ${server_config.port}`);
 });
